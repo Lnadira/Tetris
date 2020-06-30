@@ -1,20 +1,65 @@
 document.addEventListener('DOMContentLoaded', () => {
+  //make the actual game grid
   for (x=0; x<200; x++) {
         var grid = document.createElement('div');
         grid.className = "game-grid";
         document.getElementById('grid').appendChild(grid);
   };
 
+  //extension of game grid to indicate bottom of grid
   for (x=0; x<10; x++) {
     var grid = document.createElement('div');
     grid.className = "taken";
     document.getElementById('grid').appendChild(grid);
   };
 
+  //function makeFourGrid() {
+    for (x=0; x<4; x++) {
+          var grid = document.createElement('div');
+          //grid.className = "game-grid";
+          document.getElementsByClassName('four-grid')[1].appendChild(grid);
+    };
+  //}
+
+  //function makeThreeGrid() {
+    for (x=0; x<6; x++) {
+          var grid = document.createElement('div');
+          //grid.className = "game-grid";
+          document.getElementsByClassName('three-grid')[1].appendChild(grid);
+    };
+  //}
+
+  //make two grid
+    for (x=0; x<4; x++) {
+      var grid = document.createElement('div');
+      //grid.className = 'game-grid';
+      document.getElementsByClassName('two-grid')[1].appendChild(grid);
+    }
+
+  function showFourGrids() {
+    document.getElementsByClassName("two-grid")[1].style.display = "none";
+    document.getElementsByClassName("three-grid")[1].style.display = "none";
+    document.getElementsByClassName("four-grid")[1].style.display = "grid";
+  }
+
+  function showThreeGrids() {
+    document.getElementsByClassName("two-grid")[1].style.display = "none";
+    document.getElementsByClassName("four-grid")[1].style.display = "none";
+    document.getElementsByClassName("three-grid")[1].style.display = "grid";
+  }
+
+  function showTwoGrids() {
+    document.getElementsByClassName("four-grid")[1].style.display = "none";
+    document.getElementsByClassName("three-grid")[1].style.display = "none";
+    document.getElementsByClassName("two-grid")[1].style.display = "grid";
+  }
+
+
   const tetrisGrid = document.querySelector('#grid');
   let squares = Array.from(document.querySelectorAll('#grid div'));
   const scoreDisplay = document.querySelector('#score');
   const startBtn = document.querySelector('#start-button');
+  const resetBtn = document.querySelector('#reset-button');
   const width = 10;
   let nextRandom = 0;
   let timerId;
@@ -136,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
       current = theTetrominoes[random][currentRotation]
       currentPosition = 4
       draw()
-      //displayShape()
+      displayShape()
       addScore()
       gameOver()
     }
@@ -184,35 +229,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   //show up-next Tetromino in mini-grid ScoreDisplay
-  /*const displaySquare = document.querySelectorAll('.mini-grid div')
-  const displayWidth = 4
-  const displayIndex = 0
+  //const displaySquare = document.querySelectorAll('.mini-grid div')
+  //const displayWidth = 3;
+  const displayIndex = 0;
 
   //the Tetrominoes without rotations
   const upNextTetrominoes = [
     [0, 1, 2, 3], //iTetromino
-    [0, 1, displayWidth, displayWidth+1], //oTetromino
-    [0, 1, 2, displayWidth+1], //tTetromino
-    [0, 1, 2, displayWidth], //lTetromino
-    [0, 1, 2, displayWidth+2], //jTetromino
-    [0, 1, displayWidth+1, displayWidth+2], //zTetromino
-    [1, 2, displayWidth, displayWidth+1] //sTetromino
+    [0, 1, 2, 3], //oTetromino
+    [0, 1, 2, 4], //tTetromino
+    [0, 1, 2, 3], //lTetromino
+    [0, 1, 2, 5], //jTetromino
+    [0, 1, 4, 5], //zTetromino
+    [1, 2, 3, 4] //sTetromino
   ]
 
   //display the shape in the mini-grid display
   function displayShape() {
+    /*if (nextRandom == 0) {
+      showFourGrids();
+      var displaySquare = document.getElementsByClassName('four-grid')[1].querySelectorAll('div');
+    } else {
+      showThreeGrids();
+      var displaySquare = document.getElementsByClassName('three-grid')[1].querySelectorAll('div');
+    }*/
+    switch(nextRandom) {
+      case 0:
+        showFourGrids();
+        var displaySquare = document.getElementsByClassName('four-grid')[1].querySelectorAll('div');
+        break;
+      case 1:
+        showTwoGrids()
+        var displaySquare = document.getElementsByClassName('two-grid')[1].querySelectorAll('div');
+        break;
+      default:
+        showThreeGrids();
+        var displaySquare = document.getElementsByClassName('three-grid')[1].querySelectorAll('div');
+    }
+
     //remove any trace of a tetromino from the entire grid
     displaySquare.forEach(square => {
       square.classList.remove('tetromino')
       square.style.backgroundColor = ''
     })
+
     upNextTetrominoes[nextRandom].forEach(index => {
       displaySquare[displayIndex + index].classList.add('tetromino')
       displaySquare[displayIndex + index].style.backgroundColor = colors[nextRandom]
     })
-  }*/
+  }
 
-  //add functionality to the button
+  //add functionality to the start button
   startBtn.addEventListener('click', () => {
     if (timerId) {
       clearInterval(timerId)
@@ -221,15 +288,20 @@ document.addEventListener('DOMContentLoaded', () => {
       draw()
       timerId = setInterval(moveDown, 1000)
       nextRandom = Math.floor(Math.random()*theTetrominoes.length)
-      //displayShape()
+      displayShape()
     }
   })
+
+  //add functionalit to the reset button
+  resetBtn.addEventListener('click', () => {
+    location.reload();
+  });
 
   //add score
   function addScore(){
     for (let i = 0; i < 199; i += width) {
       const row = [i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9]
-      
+
       if (row.every(index => squares[index].classList.contains('taken'))) {
         score += 10
         scoreDisplay.innerHTML = score
