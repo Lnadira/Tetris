@@ -13,26 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('grid').appendChild(grid);
   };
 
-  /*//function makeFourGrid() {
-    for (x=0; x<4; x++) {
-          var grid = document.createElement('div');
-          document.getElementsByClassName('four-grid')[1].appendChild(grid);
-    };
-  //}
-
-  //function makeThreeGrid() {
-    for (x=0; x<6; x++) {
-          var grid = document.createElement('div');
-          document.getElementsByClassName('three-grid')[1].appendChild(grid);
-    };
-  //}
-
-  //make two grid
-    for (x=0; x<4; x++) {
-      var grid = document.createElement('div');
-      document.getElementsByClassName('two-grid')[1].appendChild(grid);
-    }*/
-
+    //side parameter is to tell which display box to use
+  //0 is for the hold display and 1 is for the next display
   function showFourGrids(side) {
     document.getElementsByClassName("two-grid")[side].style.display = "none";
     document.getElementsByClassName("three-grid")[side].style.display = "none";
@@ -55,12 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const tetrisGrid = document.querySelector('#grid');
   let squares = Array.from(document.querySelectorAll('#grid div'));
   const scoreDisplay = document.querySelector('#score');
+  const linesDisplay = document.querySelector('#lines');
   const startBtn = document.querySelector('#start-button');
   const resetBtn = document.querySelector('#reset-button');
   const width = 10;
   let nextRandom = 0;
   let timerId;
   let score = 0;
+  let lines = 0;
   const colors = [
     '#EFBDEB',
     '#84BC9C',
@@ -130,6 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let random = Math.floor(Math.random()*theTetrominoes.length);
   let current = theTetrominoes[random][currentRotation];
 
+  //variables for the holdShape function
+  let holdRandom;
+  let onHold;
+
   //draw the Tetromino
   function draw() {
     current.forEach(index => {
@@ -156,6 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
       moveRight()
     } else if (event.keyCode == 40) {
       moveDown()
+    } else if (event.keyCode == 16) {
+      holdShape()
     }
   }
   document.addEventListener('keydown', control);
@@ -173,15 +163,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
       current.forEach(index => squares[currentPosition + index].classList.add('taken'))
       //start a new Tetromino falling
-      random = nextRandom
-      nextRandom = Math.floor(Math.random()*theTetrominoes.length)
-      current = theTetrominoes[random][currentRotation]
-      currentPosition = 4
-      draw()
-      displayShape(1, nextRandom)
-      addScore()
-      gameOver()
+      generateNext();
+      newTetromino();
+      if (onHold != undefined) {
+        onHold = false;
+      }
+
     }
+  }
+
+  //start a new Tetromino falling
+  function newTetromino(shape = random) {
+    current = theTetrominoes[shape][currentRotation]
+    currentPosition = 4
+    draw()
+    displayShape(1, nextRandom)
+    addScore()
+    gameOver()
+  }
+
+  //generate the next Tetromino
+  function generateNext() {
+    random = nextRandom
+    nextRandom = Math.floor(Math.random()*theTetrominoes.length)
   }
 
   //move Tetromino left unless there is a blockage
@@ -225,6 +229,30 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
   }
 
+  let temp;
+
+  function holdShape() {
+    if (onHold != true) {
+      if(onHold === undefined) {
+        holdRandom = random;
+        displayShape(0, random);
+        undraw();
+        generateNext();
+        newTetromino();
+        onHold = true;
+      } else {
+        displayShape(0, random);
+        undraw();
+        [holdRandom, random] = [random, holdRandom];
+        newTetromino();
+
+        onHold = true;
+      }
+    }
+
+
+  }
+
   //show up-next Tetromino in mini-grid ScoreDisplay
   //const displaySquare = document.querySelectorAll('.mini-grid div')
   //const displayWidth = 3;
@@ -243,9 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //display the shape in the mini-grid display
   function displayShape(side, shape) {
-    //side parameter is to tell which display box to use
-    //0 is for the hold display and 1 is for the next display
-    switch(nextRandom) {
+    switch(shape) {
       case 0:
         showFourGrids(side);
         var displaySquare = document.getElementsByClassName('four-grid')[side].querySelectorAll('div');
@@ -267,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     upNextTetrominoes[shape].forEach(index => {
       displaySquare[displayIndex + index].classList.add('tetromino')
-      displaySquare[displayIndex + index].style.backgroundColor = colors[nextRandom]
+      displaySquare[displayIndex + index].style.backgroundColor = colors[shape]
     })
   }
 
@@ -296,7 +322,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (row.every(index => squares[index].classList.contains('taken'))) {
         score += 10
+        lines += 1
         scoreDisplay.innerHTML = score
+        linesDisplay.innerHTML = lines
         row.forEach(index => {
           squares[index].classList.remove('taken')
           squares[index].classList.remove('tetromino')
