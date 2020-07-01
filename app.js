@@ -13,10 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('grid').appendChild(grid);
   };
 
-  //function makeFourGrid() {
+  /*//function makeFourGrid() {
     for (x=0; x<4; x++) {
           var grid = document.createElement('div');
-          //grid.className = "game-grid";
           document.getElementsByClassName('four-grid')[1].appendChild(grid);
     };
   //}
@@ -24,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   //function makeThreeGrid() {
     for (x=0; x<6; x++) {
           var grid = document.createElement('div');
-          //grid.className = "game-grid";
           document.getElementsByClassName('three-grid')[1].appendChild(grid);
     };
   //}
@@ -32,26 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
   //make two grid
     for (x=0; x<4; x++) {
       var grid = document.createElement('div');
-      //grid.className = 'game-grid';
       document.getElementsByClassName('two-grid')[1].appendChild(grid);
-    }
+    }*/
 
-  function showFourGrids() {
-    document.getElementsByClassName("two-grid")[1].style.display = "none";
-    document.getElementsByClassName("three-grid")[1].style.display = "none";
-    document.getElementsByClassName("four-grid")[1].style.display = "grid";
+  function showFourGrids(side) {
+    document.getElementsByClassName("two-grid")[side].style.display = "none";
+    document.getElementsByClassName("three-grid")[side].style.display = "none";
+    document.getElementsByClassName("four-grid")[side].style.display = "grid";
   }
 
-  function showThreeGrids() {
-    document.getElementsByClassName("two-grid")[1].style.display = "none";
-    document.getElementsByClassName("four-grid")[1].style.display = "none";
-    document.getElementsByClassName("three-grid")[1].style.display = "grid";
+  function showThreeGrids(side) {
+    document.getElementsByClassName("two-grid")[side].style.display = "none";
+    document.getElementsByClassName("four-grid")[side].style.display = "none";
+    document.getElementsByClassName("three-grid")[side].style.display = "grid";
   }
 
-  function showTwoGrids() {
-    document.getElementsByClassName("four-grid")[1].style.display = "none";
-    document.getElementsByClassName("three-grid")[1].style.display = "none";
-    document.getElementsByClassName("two-grid")[1].style.display = "grid";
+  function showTwoGrids(side) {
+    document.getElementsByClassName("four-grid")[side].style.display = "none";
+    document.getElementsByClassName("three-grid")[side].style.display = "none";
+    document.getElementsByClassName("two-grid")[side].style.display = "grid";
   }
 
 
@@ -181,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       current = theTetrominoes[random][currentRotation]
       currentPosition = 4
       draw()
-      displayShape()
+      displayShape(1, nextRandom)
       addScore()
       gameOver()
     }
@@ -245,26 +242,21 @@ document.addEventListener('DOMContentLoaded', () => {
   ]
 
   //display the shape in the mini-grid display
-  function displayShape() {
-    /*if (nextRandom == 0) {
-      showFourGrids();
-      var displaySquare = document.getElementsByClassName('four-grid')[1].querySelectorAll('div');
-    } else {
-      showThreeGrids();
-      var displaySquare = document.getElementsByClassName('three-grid')[1].querySelectorAll('div');
-    }*/
+  function displayShape(side, shape) {
+    //side parameter is to tell which display box to use
+    //0 is for the hold display and 1 is for the next display
     switch(nextRandom) {
       case 0:
-        showFourGrids();
-        var displaySquare = document.getElementsByClassName('four-grid')[1].querySelectorAll('div');
+        showFourGrids(side);
+        var displaySquare = document.getElementsByClassName('four-grid')[side].querySelectorAll('div');
         break;
       case 1:
-        showTwoGrids()
-        var displaySquare = document.getElementsByClassName('two-grid')[1].querySelectorAll('div');
+        showTwoGrids(side)
+        var displaySquare = document.getElementsByClassName('two-grid')[side].querySelectorAll('div');
         break;
       default:
-        showThreeGrids();
-        var displaySquare = document.getElementsByClassName('three-grid')[1].querySelectorAll('div');
+        showThreeGrids(side);
+        var displaySquare = document.getElementsByClassName('three-grid')[side].querySelectorAll('div');
     }
 
     //remove any trace of a tetromino from the entire grid
@@ -273,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
       square.style.backgroundColor = ''
     })
 
-    upNextTetrominoes[nextRandom].forEach(index => {
+    upNextTetrominoes[shape].forEach(index => {
       displaySquare[displayIndex + index].classList.add('tetromino')
       displaySquare[displayIndex + index].style.backgroundColor = colors[nextRandom]
     })
@@ -288,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
       draw()
       timerId = setInterval(moveDown, 1000)
       nextRandom = Math.floor(Math.random()*theTetrominoes.length)
-      displayShape()
+      displayShape(1, nextRandom)
     }
   })
 

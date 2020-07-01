@@ -90,3 +90,9 @@ button {
 button:hover {
   background-color: #84BC9C;
 }
+
+/*.tetromino {
+  border: 2px solid white;
+  border-radius: 5%;
+  padding: 0;
+}*/
