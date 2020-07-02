@@ -1,4 +1,12 @@
-
+<!--
+  This tetris game started by following a tutorial by Ania Kubow.
+  Have since:
+  - added 2 more tetromino shapes
+  - added number of lines count
+  - changed movement control from 'keyup' to 'keydown'
+  - changed visual design
+  - added the ability to hold a shape
+-->
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -16,6 +24,12 @@
 
     <div id="container">
       <div class="side-container">
+        <div id="instructions" class="side-text">
+          <p><i class="fas fa-long-arrow-alt-left"></i> <i class="fas fa-long-arrow-alt-right"></i> - left/right</p>
+          <p><i class="fas fa-long-arrow-alt-down"></i> - down</p>
+          <p><i class="fas fa-long-arrow-alt-up"></i> - rotate</p>
+          <p>shift - hold</p>
+        </div>
         <p style="margin: 0">On hold:</p>
         <div id="hold" class="display-grid">
           <div class="four-grid">
@@ -50,7 +64,7 @@
       </div>
 
       <div class="side-container">
-        <div class="stats">
+        <div id="stats" class="side-text">
           <p>Score: <span id="score">0</span></p>
           <p>Lines: <span id="lines">0</span></p>
           <p>Level:</p>
